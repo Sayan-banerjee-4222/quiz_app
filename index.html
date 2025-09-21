@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QuizMaster Pro - Interactive Trivia</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="notification" id="notification"></div>
+    
+    <div class="app-container">
+        <div class="quiz-card">
+            <div class="quiz-header">
+                <div class="user-info" id="userInfo">
+                    <div class="user-avatar" id="userAvatar"></div>
+                    <div>
+                        <div id="userName">Player</div>
+                    </div>
+                </div>
+                <div class="rank-display" id="currentRank">
+                    <div class="rank-title">Your Best</div>
+                    <div class="rank-value">--</div>
+                </div>
+                <h1 class="quiz-title">QuizMaster Pro</h1>
+                <p class="quiz-subtitle">Interactive Multiplayer Trivia Experience</p>
+            </div>
+            
+            <div class="quiz-content">
+                <!-- Welcome Screen -->
+                <div class="screen active" id="welcomeScreen">
+                    <div class="welcome-form">
+                        <h2 class="welcome-title">Welcome to QuizMaster Pro!</h2>
+                        <p class="welcome-subtitle">Enter your name to start your trivia journey</p>
+                        
+                        <div class="form-group">
+                            <input type="text" class="form-input" id="playerName" placeholder="Enter your name" maxlength="20">
+                        </div>
+                        
+                        <div class="form-group">
+                            <select class="form-select" id="avatarColor">
+                                <option value="#f39c12">🟡 Golden Yellow</option>
+                                <option value="#e74c3c">🔴 Ruby Red</option>
+                                <option value="#3498db">🔵 Ocean Blue</option>
+                                <option value="#2ecc71">🟢 Emerald Green</option>
+                                <option value="#9b59b6">🟣 Royal Purple</option>
+                                <option value="#e67e22">🟠 Sunset Orange</option>
+                            </select>
+                        </div>
+                        
+                        <button class="btn" id="enterQuiz">Enter Quiz Arena</button>
+                    </div>
+                </div>
+                
+                <!-- Main Menu -->
+                <div class="screen" id="mainMenuScreen">
+                    <div class="nav-buttons">
+                        <button class="nav-btn active" id="navSolo">Solo Play</button>
+                        <button class="nav-btn" id="navMultiplayer">Multiplayer</button>
+                        <button class="nav-btn" id="navLeaderboard">Leaderboard</button>
+                    </div>
+                </div>
+                
+                <!-- Setup Screen -->
+                <div class="screen" id="setupScreen">
+                    <h2 style="margin-bottom: 30px;">Solo Challenge</h2>
+                    <div class="form-group">
+                        <label class="form-label">Number of Questions</label>
+                        <select class="form-select" id="numQuestions">
+                            <option value="5">5 Questions</option>
+                            <option value="10" selected>10 Questions</option>
+                            <option value="15">15 Questions</option>
+                            <option value="20">20 Questions</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Category</label>
+                        <select class="form-select" id="category">
+                            <option value="">Any Category</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Difficulty</label>
+                        <select class="form-select" id="difficulty">
+                            <option value="">Any Difficulty</option>
+                            <option value="easy">Easy</option>
+                            <option value="medium">Medium</option>
+                            <option value="hard">Hard</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Question Type</label>
+                        <select class="form-select" id="type">
+                            <option value="">Any Type</option>
+                            <option value="multiple">Multiple Choice</option>
+                            <option value="boolean">True/False</option>
+                        </select>
+                    </div>
+                    
+                    <button class="btn" id="startQuiz">Start Solo Quiz</button>
+                    <button class="btn secondary" id="backToMenu">Back to Menu</button>
+                </div>
+                
+                <!-- Multiplayer Screen -->
+                <div class="screen" id="multiplayerScreen">
+                    <h2 style="margin-bottom: 30px;">Multiplayer Options</h2>
+                    
+                    <div class="multiplayer-options">
+                        <div class="multiplayer-card" id="createRoom">
+                            <h3>🎯 Create Room</h3>
+                            <p>Host a quiz room and invite friends with a room code. Perfect for playing with specific people!</p>
+                        </div>
+                        
+                        <div class="multiplayer-card" id="joinRoom">
+                            <h3>🚀 Join Room</h3>
+                            <p>Enter a room code to join an existing quiz session. Compete with other players in real-time!</p>
+                        </div>
+                        
+                        <div class="multiplayer-card" id="quickMatch">
+                            <h3>⚡ Quick Challenge</h3>
+                            <p>Start a quick challenge and share your score with friends. See who can beat your record!</p>
+                        </div>
+                    </div>
+                    
+                    <button class="btn secondary" id="backToMenuFromMultiplayer">Back to Menu</button>
+                </div>
+                
+                <!-- Quiz Screen -->
+                <div class="screen" id="quizScreen">
+                    <div class="quiz-stats">
+                        <span>Question <span id="currentQ">1</span> of <span id="totalQ">10</span></span>
+                        <span>Score: <span id="currentScore">0</span></span>
+                    </div>
+                    
+                    <div class="progress-container">
+                        <div class="progress-bar" id="progressBar"></div>
+                    </div>
+                    
+                    <div class="question-container">
+                        <div class="category-badge" id="questionCategory"></div>
+                        <div class="difficulty-indicator" id="difficultyIndicator"></div>
+                        <div class="question-text" id="questionText"></div>
+                        <div class="answer-grid" id="answersGrid"></div>
+                    </div>
+                    
+                    <button class="btn" id="nextQuestion" style="display: none;">Next Question</button>
+                    <button class="btn" id="finishQuiz" style="display: none;">View Results</button>
+                </div>
+                
+                <!-- Results Screen -->
+                <div class="screen" id="resultsScreen">
+                    <h2>Quiz Complete!</h2>
+                    <div class="score-display" id="finalScore">0/10</div>
+                    <div id="achievementBadges"></div>
+                    
+                    <div class="social-share">
+                        <button class="share-btn share-twitter" id="shareTwitter">Share on Twitter</button>
+                        <button class="share-btn share-whatsapp" id="shareWhatsApp">Share on WhatsApp</button>
+                        <button class="share-btn share-copy" id="copyScore">Copy Score</button>
+                    </div>
+                    
+                    <div class="results-details" id="resultsDetails"></div>
+                    <button class="btn secondary" id="viewLeaderboard">View Records</button>
+                    <button class="btn" id="playAgain">Play Again</button>
+                </div>
+                
+                <!-- Leaderboard Screen -->
+                <div class="screen" id="leaderboardScreen">
+                    <h2 style="margin-bottom: 30px;">Your Personal Records</h2>
+                    <div class="leaderboard-container" id="leaderboardContainer">
+                        <div style="text-align: center; color: #666; padding: 40px;">
+                            No scores recorded yet. Take a quiz to see your results here!
+                        </div>
+                    </div>
+                    <button class="btn secondary" id="backToMenuFromLeaderboard">Back to Menu</button>
+                </div>
+                
+                <!-- Loading Screen -->
+                <div class="loading" id="loadingScreen" style="display: none;">
+                    <div class="spinner"></div>
+                    <p>Loading your quiz...</p>
+                </div>
+                
+                <!-- Error Display -->
+                <div class="error-message" id="errorMessage" style="display: none;"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
