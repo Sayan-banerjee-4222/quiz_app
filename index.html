@@ -1,195 +1,484 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QuizMaster Pro - Interactive Trivia</title>
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IntelliQuiz</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
+    body {
+      font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+      text-align: center;
+      padding: 0;
+      margin: 0;
+      min-height: 100vh;
+      /* Dynamic animated gradient background */
+      background: linear-gradient(120deg, #232526 0%, #414345 100%);
+      background-size: 200% 200%;
+      animation: gradientMove 8s ease-in-out infinite;
+      /* Subtle geometric SVG overlay */
+      background-image:
+        linear-gradient(120deg, #232526 0%, #414345 100%),
+        url("https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80"),
+        url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='40' height='40' fill='white' fill-opacity='0.01'/%3E%3Cpath d='M0 40L40 0M20 40L40 20M0 20L20 0' stroke='%2343c6ac' stroke-opacity='0.07' stroke-width='2'/%3E%3C/svg%3E");
+      background-repeat: no-repeat, no-repeat, repeat;
+      background-position: center center, center center, 0 0;
+      background-size: cover, cover, 80px 80px;
+      background-attachment: fixed;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+    @keyframes gradientMove {
+      0% { background-position: 0% 50%, center center, 0 0; }
+      50% { background-position: 100% 50%, center center, 0 0; }
+      100% { background-position: 0% 50%, center center, 0 0; }
+    }
+    .home-container, .quiz-container {
+      background: rgba(255,255,255,0.98);
+      border-radius: 22px;
+      box-shadow: 0 8px 32px rgba(67,198,172,0.13), 0 1.5px 8px rgba(25,22,84,0.10);
+      max-width: 430px;
+      margin: 40px auto 20px auto;
+      padding: 44px 34px 34px 34px;
+      backdrop-filter: blur(8px);
+      position: relative;
+      transition: box-shadow 0.2s;
+      z-index: 1;
+      border: 1.5px solid #e0e7ef;
+      /* Add a subtle gradient border effect */
+      box-shadow:
+        0 8px 32px rgba(67,198,172,0.13),
+        0 1.5px 8px rgba(25,22,84,0.10),
+        0 0 0 4px #43c6ac11;
+    }
+    .home-container:before, .quiz-container:before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: 22px;
+      pointer-events: none;
+      background: linear-gradient(120deg, #43c6ac22 0%, #19165411 100%);
+      z-index: 0;
+    }
+    .home-container h1, .quiz-container h1 {
+      color: #232526;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      margin-bottom: 18px;
+      font-size: 2.2rem;
+      background: linear-gradient(90deg, #43c6ac 30%, #191654 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .home-container input, .home-container select, .home-container button,
+    .quiz-container input, .quiz-container select, .quiz-container button {
+      font-family: inherit;
+    }
+    .home-container input, .home-container select {
+      padding: 13px;
+      border-radius: 9px;
+      border: 1.5px solid #43c6ac;
+      width: 83%;
+      margin-bottom: 20px;
+      font-size: 17px;
+      background: #f8fafb;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      outline: none;
+      box-shadow: 0 1px 4px #43c6ac11;
+    }
+    .home-container input:focus, .home-container select:focus {
+      border-color: #191654;
+      box-shadow: 0 0 0 2px #43c6ac33;
+    }
+    .home-container button, .quiz-container button {
+      background: linear-gradient(90deg, #43c6ac 0%, #191654 100%);
+      color: #fff;
+      border: none;
+      border-radius: 9px;
+      padding: 13px 30px;
+      font-size: 17px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 10px;
+      margin-bottom: 0;
+      box-shadow: 0 2px 8px #43c6ac22;
+      transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
+      letter-spacing: 0.7px;
+      position: relative;
+      z-index: 1;
+    }
+    .home-container button:hover, .quiz-container button:hover {
+      background: linear-gradient(90deg, #191654 0%, #43c6ac 100%);
+      transform: translateY(-2px) scale(1.04);
+      box-shadow: 0 4px 16px #43c6ac33;
+    }
+    #logoutBtn {
+      background: linear-gradient(90deg, #ff1744 0%, #ff8a65 100%);
+      margin-left: 8px;
+      margin-top: 18px;
+      font-size: 15px;
+      padding: 10px 22px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+    #logoutBtn:hover {
+      background: linear-gradient(90deg, #ff8a65 0%, #ff1744 100%);
+    }
+    .question {
+      font-size: 23px;
+      margin-bottom: 22px;
+      color: #191654;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+    .options button {
+      display: block;
+      width: 100%;
+      padding: 14px;
+      margin: 12px 0;
+      cursor: pointer;
+      background: linear-gradient(90deg, #f7971e 0%, #ffd200 100%);
+      border: none;
+      border-radius: 9px;
+      font-size: 16.5px;
+      font-weight: 600;
+      transition: background 0.2s, color 0.2s, transform 0.1s, box-shadow 0.2s;
+      box-shadow: 0 1px 4px #f7971e22;
+      letter-spacing: 0.3px;
+    }
+    .options button:hover {
+      background: linear-gradient(90deg, #43c6ac 0%, #191654 100%);
+      color: #fff;
+      transform: scale(1.025);
+      box-shadow: 0 4px 12px #43c6ac33;
+    }
+    .result {
+      font-size: 25px;
+      margin-top: 22px;
+      color: #43c6ac;
+      font-weight: 800;
+      letter-spacing: 1.2px;
+      text-shadow: 0 2px 8px #43c6ac22;
+    }
+    #bestScore {
+      margin: 14px 0;
+      color: #191654;
+      font-weight: 700;
+      font-size: 1.13rem;
+      letter-spacing: 0.3px;
+      background: #f8fafb;
+      border-radius: 7px;
+      padding: 7px 0;
+      box-shadow: 0 1px 4px #43c6ac11;
+    }
+    #loginError {
+      color: #ff1744;
+      margin-top: 10px;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+    }
+    .feedback {
+      margin-top: 18px;
+      font-size: 19px;
+      font-weight: bold;
+      min-height: 26px;
+      letter-spacing: 0.7px;
+      text-shadow: 0 1px 4px #43c6ac11;
+    }
+    #welcomeUser {
+      font-size: 1.1rem;
+      margin-bottom: 14px;
+      color: #43c6ac;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+    @media (max-width: 600px) {
+      .home-container, .quiz-container {
+        max-width: 99vw;
+        padding: 18px 2vw 18px 2vw;
+      }
+      .question {
+        font-size: 18px;
+      }
+      .result {
+        font-size: 20px;
+      }
+    }
+  </style>
 </head>
 <body>
-    <div class="notification" id="notification"></div>
-    
-    <div class="app-container">
-        <div class="quiz-card">
-            <div class="quiz-header">
-                <div class="user-info" id="userInfo">
-                    <div class="user-avatar" id="userAvatar"></div>
-                    <div>
-                        <div id="userName">Player</div>
-                    </div>
-                </div>
-                <div class="rank-display" id="currentRank">
-                    <div class="rank-title">Your Best</div>
-                    <div class="rank-value">--</div>
-                </div>
-                <h1 class="quiz-title">QuizMaster Pro</h1>
-                <p class="quiz-subtitle">Interactive Multiplayer Trivia Experience</p>
-            </div>
-            
-            <div class="quiz-content">
-                <!-- Welcome Screen -->
-                <div class="screen active" id="welcomeScreen">
-                    <div class="welcome-form">
-                        <h2 class="welcome-title">Welcome to QuizMaster Pro!</h2>
-                        <p class="welcome-subtitle">Enter your name to start your trivia journey</p>
-                        
-                        <div class="form-group">
-                            <input type="text" class="form-input" id="playerName" placeholder="Enter your name" maxlength="20">
-                        </div>
-                        
-                        <div class="form-group">
-                            <select class="form-select" id="avatarColor">
-                                <option value="#f39c12">🟡 Golden Yellow</option>
-                                <option value="#e74c3c">🔴 Ruby Red</option>
-                                <option value="#3498db">🔵 Ocean Blue</option>
-                                <option value="#2ecc71">🟢 Emerald Green</option>
-                                <option value="#9b59b6">🟣 Royal Purple</option>
-                                <option value="#e67e22">🟠 Sunset Orange</option>
-                            </select>
-                        </div>
-                        
-                        <button class="btn" id="enterQuiz">Enter Quiz Arena</button>
-                    </div>
-                </div>
-                
-                <!-- Main Menu -->
-                <div class="screen" id="mainMenuScreen">
-                    <div class="nav-buttons">
-                        <button class="nav-btn active" id="navSolo">Solo Play</button>
-                        <button class="nav-btn" id="navMultiplayer">Multiplayer</button>
-                        <button class="nav-btn" id="navLeaderboard">Leaderboard</button>
-                    </div>
-                </div>
-                
-                <!-- Setup Screen -->
-                <div class="screen" id="setupScreen">
-                    <h2 style="margin-bottom: 30px;">Solo Challenge</h2>
-                    <div class="form-group">
-                        <label class="form-label">Number of Questions</label>
-                        <select class="form-select" id="numQuestions">
-                            <option value="5">5 Questions</option>
-                            <option value="10" selected>10 Questions</option>
-                            <option value="15">15 Questions</option>
-                            <option value="20">20 Questions</option>
-                        </select>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label">Category</label>
-                        <select class="form-select" id="category">
-                            <option value="">Any Category</option>
-                        </select>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label">Difficulty</label>
-                        <select class="form-select" id="difficulty">
-                            <option value="">Any Difficulty</option>
-                            <option value="easy">Easy</option>
-                            <option value="medium">Medium</option>
-                            <option value="hard">Hard</option>
-                        </select>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label">Question Type</label>
-                        <select class="form-select" id="type">
-                            <option value="">Any Type</option>
-                            <option value="multiple">Multiple Choice</option>
-                            <option value="boolean">True/False</option>
-                        </select>
-                    </div>
-                    
-                    <button class="btn" id="startQuiz">Start Solo Quiz</button>
-                    <button class="btn secondary" id="backToMenu">Back to Menu</button>
-                </div>
-                
-                <!-- Multiplayer Screen -->
-                <div class="screen" id="multiplayerScreen">
-                    <h2 style="margin-bottom: 30px;">Multiplayer Options</h2>
-                    
-                    <div class="multiplayer-options">
-                        <div class="multiplayer-card" id="createRoom">
-                            <h3>🎯 Create Room</h3>
-                            <p>Host a quiz room and invite friends with a room code. Perfect for playing with specific people!</p>
-                        </div>
-                        
-                        <div class="multiplayer-card" id="joinRoom">
-                            <h3>🚀 Join Room</h3>
-                            <p>Enter a room code to join an existing quiz session. Compete with other players in real-time!</p>
-                        </div>
-                        
-                        <div class="multiplayer-card" id="quickMatch">
-                            <h3>⚡ Quick Challenge</h3>
-                            <p>Start a quick challenge and share your score with friends. See who can beat your record!</p>
-                        </div>
-                    </div>
-                    
-                    <button class="btn secondary" id="backToMenuFromMultiplayer">Back to Menu</button>
-                </div>
-                
-                <!-- Quiz Screen -->
-                <div class="screen" id="quizScreen">
-                    <div class="quiz-stats">
-                        <span>Question <span id="currentQ">1</span> of <span id="totalQ">10</span></span>
-                        <span>Score: <span id="currentScore">0</span></span>
-                    </div>
-                    
-                    <div class="progress-container">
-                        <div class="progress-bar" id="progressBar"></div>
-                    </div>
-                    
-                    <div class="question-container">
-                        <div class="category-badge" id="questionCategory"></div>
-                        <div class="difficulty-indicator" id="difficultyIndicator"></div>
-                        <div class="question-text" id="questionText"></div>
-                        <div class="answer-grid" id="answersGrid"></div>
-                    </div>
-                    
-                    <button class="btn" id="nextQuestion" style="display: none;">Next Question</button>
-                    <button class="btn" id="finishQuiz" style="display: none;">View Results</button>
-                </div>
-                
-                <!-- Results Screen -->
-                <div class="screen" id="resultsScreen">
-                    <h2>Quiz Complete!</h2>
-                    <div class="score-display" id="finalScore">0/10</div>
-                    <div id="achievementBadges"></div>
-                    
-                    <div class="social-share">
-                        <button class="share-btn share-twitter" id="shareTwitter">Share on Twitter</button>
-                        <button class="share-btn share-whatsapp" id="shareWhatsApp">Share on WhatsApp</button>
-                        <button class="share-btn share-copy" id="copyScore">Copy Score</button>
-                    </div>
-                    
-                    <div class="results-details" id="resultsDetails"></div>
-                    <button class="btn secondary" id="viewLeaderboard">View Records</button>
-                    <button class="btn" id="playAgain">Play Again</button>
-                </div>
-                
-                <!-- Leaderboard Screen -->
-                <div class="screen" id="leaderboardScreen">
-                    <h2 style="margin-bottom: 30px;">Your Personal Records</h2>
-                    <div class="leaderboard-container" id="leaderboardContainer">
-                        <div style="text-align: center; color: #666; padding: 40px;">
-                            No scores recorded yet. Take a quiz to see your results here!
-                        </div>
-                    </div>
-                    <button class="btn secondary" id="backToMenuFromLeaderboard">Back to Menu</button>
-                </div>
-                
-                <!-- Loading Screen -->
-                <div class="loading" id="loadingScreen" style="display: none;">
-                    <div class="spinner"></div>
-                    <p>Loading your quiz...</p>
-                </div>
-                
-                <!-- Error Display -->
-                <div class="error-message" id="errorMessage" style="display: none;"></div>
-            </div>
-        </div>
+  <div style="width:100%;text-align:center;margin-top:30px;margin-bottom:-10px;z-index:2;position:relative;">
+    <img src="intelliquiz_logo.svg"
+      alt="IntelliQuiz Logo"
+      style="max-width:140px;width:30vw;filter:drop-shadow(0 4px 16px #19165444);border-radius:50%;background:#fff;padding:8px;">
+    <div style="font-size:2.1rem;font-weight:800;letter-spacing:1.5px;color:#191654;margin-top:10px;">
+      IntelliQuiz Competition
     </div>
+  </div>
 
-    <script src="script.js"></script>
+  <!-- LOGIN PAGE -->
+  <div class="home-container" id="login" style="display:block;">
+    <h1>IntelliQuiz Login</h1>
+    <input type="text" id="loginUsername" placeholder="Enter your username" style="display:block; margin:0 auto 16px auto;" />
+  <button id="loginBtn">Start Quiz</button>
+    <div id="loginError" style="color:#ff1744; margin-top:10px;"></div>
+  </div>
+
+  <!-- HOME PAGE -->
+  <div class="home-container" id="home" style="display:none;">
+    <h1>Welcome to IntelliQuiz!</h1>
+    <div id="welcomeUser" style="font-weight:bold; color:#43c6ac; margin-bottom:10px;"></div>
+    <p>Select your preferred subject/domain:</p>
+    <select id="subject" style="width:75%; padding:10px; border-radius:8px; border:1px solid #43c6ac; margin-bottom:16px; font-size:16px;">
+      <option value="">-- Select Subject --</option>
+  <option value="dbms">DBMS</option>
+  <option value="os">Operating System</option>
+  <option value="network">Network</option>
+  <option value="gk">General Knowledge</option>
+  <option value="reasoning">Reasoning</option>
+  <option value="history">History</option>
+  <option value="current_affairs">Current Affairs</option>
+  <option value="misc">Miscellaneous (Mixed)</option>
+    </select>
+
+    <p>Number of questions:</p>
+    <input type="number" id="numQuestions" min="1" max="20" value="5" style="width:75%; padding:10px; border-radius:8px; border:1px solid #43c6ac; margin-bottom:16px; font-size:16px;" />
+
+    <div id="bestScore" style="margin: 12px 0; color: #191654; font-weight: bold;"></div>
+
+    <button id="startBtn">Start Quiz</button>
+  <button id="logoutBtn" style="margin-top:10px; background:#ff1744;">Back to Home</button>
+  </div>
+  <div class="quiz-container" id="quiz-container" style="display:none;">
+    <div id="quiz">
+      <div class="question" id="question">Loading...</div>
+      <div class="options" id="options"></div>
+      <div class="feedback" id="feedback" style="margin-top:16px; font-size:18px; font-weight:bold;"></div>
+    </div>
+    <div class="result" id="result"></div>
+  </div>
+
+  <!-- Main Script (Module) -->
+  <script type="module" src="index.js"></script>
+
+  <script type="module">
+    import { loadQuestions, db } from './index.js';
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let questions = [];
+    let userName = "";
+    let selectedSubject = "";
+    let numQuestions = 5;
+    let userData = {};
+
+    // LOGIN LOGIC
+    function showLogin() {
+      document.getElementById('login').style.display = "block";
+      document.getElementById('home').style.display = "none";
+      document.getElementById('quiz-container').style.display = "none";
+    }
+    function showHome() {
+      document.getElementById('login').style.display = "none";
+      document.getElementById('home').style.display = "block";
+      document.getElementById('quiz-container').style.display = "none";
+      document.getElementById('welcomeUser').innerText = `Hello, ${userName}!`;
+      // Load last preferences if available
+      if (userData.subject) document.getElementById('subject').value = userData.subject;
+      if (userData.numQuestions) document.getElementById('numQuestions').value = userData.numQuestions;
+      showBestScore();
+    }
+
+    document.getElementById('loginBtn').onclick = () => {
+      const input = document.getElementById('loginUsername');
+      const name = input.value.trim();
+      if (!name) {
+        document.getElementById('loginError').innerText = "Please enter your username!";
+        return;
+      }
+      userName = name;
+      // Load userData from localStorage or create new
+      const stored = localStorage.getItem(`user_${userName}`);
+      userData = stored ? JSON.parse(stored) : { results: {} };
+      showHome();
+    };
+
+    document.getElementById('logoutBtn').onclick = () => {
+      userName = "";
+      userData = {};
+      showLogin();
+    };
+
+    // Show best score if available
+    function showBestScore() {
+      const subjectInput = document.getElementById('subject');
+      const subject = subjectInput.value;
+      let best = "";
+      if (userName && subject) {
+        const bestScore = userData.results?.[subject]?.bestScore;
+        if (bestScore !== undefined) {
+          best = `Your best score in ${subjectInput.options[subjectInput.selectedIndex].text}: ${bestScore}`;
+        } else {
+          best = `No previous score in ${subjectInput.options[subjectInput.selectedIndex].text}.`;
+        }
+      } else {
+        best = "";
+      }
+      document.getElementById('bestScore').innerText = best;
+    }
+
+    document.getElementById('subject').addEventListener('change', showBestScore);
+    document.getElementById('numQuestions').addEventListener('input', () => {
+      if (userName) {
+        userData.numQuestions = document.getElementById('numQuestions').value;
+        saveUserData();
+      }
+    });
+    document.getElementById('subject').addEventListener('change', () => {
+      if (userName) {
+        userData.subject = document.getElementById('subject').value;
+        saveUserData();
+      }
+    });
+
+    document.getElementById('startBtn').onclick = () => {
+      const subjectInput = document.getElementById('subject');
+      const numInput = document.getElementById('numQuestions');
+
+      let valid = true;
+
+      if (!userName) {
+        showLogin();
+        return;
+      }
+
+      if (!subjectInput.value) {
+        subjectInput.style.borderColor = "red";
+        valid = false;
+      } else {
+        subjectInput.style.borderColor = "#43c6ac";
+      }
+
+      if (!numInput.value || numInput.value < 1) {
+        numInput.style.borderColor = "red";
+        valid = false;
+      } else {
+        numInput.style.borderColor = "#43c6ac";
+      }
+
+      if (!valid) return;
+
+      selectedSubject = subjectInput.value;
+      numQuestions = parseInt(numInput.value);
+
+      // Save preferences
+      userData.subject = selectedSubject;
+      userData.numQuestions = numQuestions;
+      saveUserData();
+
+      document.getElementById('home').style.display = "none";
+      document.getElementById('quiz-container').style.display = "block";
+      initQuiz();
+    };
+
+    function saveUserData() {
+      localStorage.setItem(`user_${userName}`, JSON.stringify(userData));
+    }
+
+    // Initialize and load questions
+    async function initQuiz() {
+      currentQuestionIndex = 0;
+      score = 0;
+      document.getElementById("result").innerText = "";
+      document.getElementById("quiz").style.display = "block";
+      document.getElementById("feedback")?.remove();
+      try {
+        questions = await loadQuestions(selectedSubject, numQuestions);
+        showQuestion();
+      } catch (error) {
+        console.error("Error loading questions:", error);
+        document.getElementById("question").innerText = "Failed to load questions.";
+      }
+    }
+
+    function showQuestion() {
+      let feedbackDiv = document.getElementById("feedback");
+      if (!feedbackDiv) {
+        feedbackDiv = document.createElement("div");
+        feedbackDiv.id = "feedback";
+        feedbackDiv.style.marginTop = "16px";
+        feedbackDiv.style.fontSize = "18px";
+        feedbackDiv.style.fontWeight = "bold";
+        document.getElementById("quiz").appendChild(feedbackDiv);
+      }
+      feedbackDiv.innerText = "";
+
+      if (currentQuestionIndex >= questions.length) {
+        document.getElementById("quiz").style.display = "none";
+        document.getElementById("result").innerText =
+          `Quiz finished, ${userName}! Your score: ${score}/${questions.length}`;
+
+        // Store best score in userData
+        if (!userData.results) userData.results = {};
+        if (!userData.results[selectedSubject]) userData.results[selectedSubject] = { bestScore: 0, history: [] };
+        userData.results[selectedSubject].history.push(score);
+        if (score > (userData.results[selectedSubject].bestScore || 0)) {
+          userData.results[selectedSubject].bestScore = score;
+        }
+        saveUserData();
+
+        setTimeout(() => {
+          showHome();
+        }, 1800);
+        return;
+      }
+
+      const q = questions[currentQuestionIndex];
+      document.getElementById("question").innerText = q.question;
+
+      // Shuffle the options for this question
+      const shuffledOptions = [...q.options];
+      for (let i = shuffledOptions.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffledOptions[i], shuffledOptions[j]] = [shuffledOptions[j], shuffledOptions[i]];
+      }
+
+      let optionsDiv = document.getElementById("options");
+      if (!optionsDiv) {
+        optionsDiv = document.createElement("div");
+        optionsDiv.className = "options";
+        optionsDiv.id = "options";
+        document.getElementById("quiz").appendChild(optionsDiv);
+      }
+      optionsDiv.innerHTML = "";
+      shuffledOptions.forEach(option => {
+        const btn = document.createElement("button");
+        btn.innerText = option;
+        btn.onclick = () => {
+          Array.from(optionsDiv.children).forEach(b => b.disabled = true);
+
+          if (option === q.answer) {
+            score++;
+            feedbackDiv.innerText = "CORRECT ANSWER";
+            feedbackDiv.style.color = "#43c6ac";
+          } else {
+            feedbackDiv.innerText = `WRONG ANSWER. Correct: ${q.answer}`;
+            feedbackDiv.style.color = "#ff1744";
+          }
+          setTimeout(() => {
+            currentQuestionIndex++;
+            showQuestion();
+          }, 1200);
+        };
+        optionsDiv.appendChild(btn);
+      });
+    }
+
+    // On load, show login page
+    showLogin();
+  </script>
 </body>
 </html>

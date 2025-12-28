@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quiz App</title>
+  <style>
+    body { font-family: Arial, sans-serif; text-align: center; padding: 50px; background-color: #f5f5f5; }
+    .container { max-width: 800px; margin: auto; padding: 30px; background-color: white; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+    h1 { color: #333; margin-bottom: 20px; }
+    .nav-buttons { margin: 30px 0; }
+    button { padding: 12px 25px; margin: 10px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; transition: background-color 0.3s; }
+    button:hover { background-color: #45a049; }
+    .card { border: 1px solid #ddd; border-radius: 8px; padding: 20px; margin: 20px 0; text-align: left; background-color: #fafafa; }
+    .card h3 { margin-top: 0; color: #4CAF50; }
+    .status { margin-top: 30px; padding: 15px; background-color: #e8f5e9; border-radius: 5px; color: #2e7d32; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Quiz App</h1>
+    <p>Welcome to the Quiz App! Test your knowledge with our interactive quizzes.</p>
+    
+    <div class="nav-buttons">
+      <button onclick="window.location.href='quiz.html'">Start Quiz</button>
+      <button onclick="window.location.href='index.html'">Alternative Quiz</button>
+      <button onclick="window.location.href='upload.html'">Upload Questions</button>
+    </div>
+    
+    <div class="card">
+      <h3>How to Use</h3>
+      <p>Click on "Start Quiz" to begin answering questions. Select the correct answer from the options provided. Your score will be displayed at the end of the quiz.</p>
+    </div>
+    
+    <div class="card">
+      <h3>Features</h3>
+      <ul>
+        <li>Interactive quiz with multiple-choice questions</li>
+        <li>Immediate feedback on your answers</li>
+        <li>Score tracking</li>
+        <li>Option to restart the quiz</li>
+      </ul>
+    </div>
+    
+    <div class="status">
+      Status: Ready to take the quiz!
+    </div>
+  </div>
+</body>
+</html>

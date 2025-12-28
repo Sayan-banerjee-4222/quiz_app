@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Quiz App</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f5f5f5; }
+    .container { max-width: 800px; margin: 0 auto; padding: 30px; background-color: white; min-height: 100vh; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+    h1 { text-align: center; color: #333; margin-bottom: 30px; }
+    .question { margin-bottom: 25px; font-size: 22px; font-weight: bold; background-color: #e8f5e9; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    .options { margin-left: 20px; }
+    .options button { display: block; margin: 10px 0; padding: 15px; width: 100%; max-width: 500px; background-color: #f0f0f0; border: 1px solid #ccc; border-radius: 5px; cursor: pointer; font-size: 16px; text-align: left; transition: all 0.2s; }
+    .options button:hover { background-color: #e0e0e0; transform: translateX(5px); }
+    .result { margin-top: 30px; font-size: 24px; font-weight: bold; text-align: center; }
+    .correct { color: green; padding: 10px; background-color: #e8f5e9; border-radius: 5px; margin-top: 10px; }
+    .incorrect { color: red; padding: 10px; background-color: #ffebee; border-radius: 5px; margin-top: 10px; }
+    #quiz-progress { text-align: center; margin-bottom: 20px; font-size: 16px; color: #666; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Quiz App</h1>
+    <div id="quiz-progress"></div>
+    <div id="quiz-container"></div>
+    <div id="result"></div>
+  </div>
+
+  <script>
+
+
+    const quizContainer = document.getElementById("quiz-container");
+    const resultContainer = document.getElementById("result");
+
+    let questions = [];
+    let currentQuestionIndex = 0;
+    let score = 0;
+
+    // Load questions from local JSON file
+    async function loadQuestions() {
+      try {
+        console.log("Fetching questions.json...");
+        const response = await fetch("questions.json");
+        questions = await response.json();
+        console.log("Questions loaded:", questions);
+        showQuestion();
+      } catch (err) {
+        console.error("Error loading questions:", err);
+        document.getElementById("quiz-container").innerHTML = "<p>Failed to load questions. Please try again later.</p>";
+      }
+    }
+    
+    // Load questions when page loads
+    loadQuestions();
+
+    function showQuestion() {
+      quizContainer.innerHTML = "";
+      const progressEl = document.getElementById("quiz-progress");
+      
+      if (currentQuestionIndex >= questions.length) {
+        quizContainer.innerHTML = "<h2>Quiz Completed!</h2>";
+        resultContainer.innerHTML = `<h3>Your Score: ${score} / ${questions.length}</h3>`;
+        progressEl.innerHTML = "";
+        
+        // Add restart button
+        const restartBtn = document.createElement("button");
+        restartBtn.textContent = "Restart Quiz";
+        restartBtn.style.padding = "12px 25px";
+        restartBtn.style.marginTop = "20px";
+        restartBtn.style.backgroundColor = "#4CAF50";
+        restartBtn.style.color = "white";
+        restartBtn.style.border = "none";
+        restartBtn.style.borderRadius = "5px";
+        restartBtn.style.cursor = "pointer";
+        restartBtn.style.fontSize = "16px";
+        restartBtn.onclick = () => {
+          currentQuestionIndex = 0;
+          score = 0;
+          resultContainer.innerHTML = "";
+          showQuestion();
+        };
+        resultContainer.appendChild(restartBtn);
+        return;
+      }
+
+      // Update progress indicator
+      progressEl.innerHTML = `Question ${currentQuestionIndex + 1} of ${questions.length}`;
+
+      const q = questions[currentQuestionIndex];
+      const questionEl = document.createElement("div");
+      questionEl.className = "question";
+      questionEl.textContent = `${currentQuestionIndex + 1}. ${q.question}`;
+
+      const optionsEl = document.createElement("div");
+      optionsEl.className = "options";
+
+      q.options.forEach((option, index) => {
+        const btn = document.createElement("button");
+        btn.textContent = `${String.fromCharCode(65 + index)}. ${option}`; // Add A, B, C, D prefixes
+        btn.onclick = () => checkAnswer(option);
+        optionsEl.appendChild(btn);
+      });
+
+      quizContainer.appendChild(questionEl);
+      quizContainer.appendChild(optionsEl);
+    }
+
+    function checkAnswer(selectedOption) {
+      const currentQuestion = questions[currentQuestionIndex];
+      const isCorrect = selectedOption === currentQuestion.answer;
+      
+      // Show feedback
+      const feedbackEl = document.createElement("div");
+      feedbackEl.className = isCorrect ? "correct" : "incorrect";
+      feedbackEl.textContent = isCorrect ? "✓ Correct!" : `✗ Incorrect! The correct answer is: ${currentQuestion.answer}`;
+      quizContainer.appendChild(feedbackEl);
+      
+      // Disable all buttons
+      const buttons = document.querySelectorAll(".options button");
+      buttons.forEach(btn => btn.disabled = true);
+      
+      // Update score if correct
+      if (isCorrect) {
+        score++;
+      }
+      
+      // Move to next question after a short delay
+      setTimeout(() => {
+        currentQuestionIndex++;
+        showQuestion();
+      }, 1500);
+    }
+
+    // Optional: Add new question
+    /*
+    import { addDoc } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js";
+    
+    async function addQuestion() {
+      try {
+        const docRef = await addDoc(collection(db, "questions"), {
+          question: "What is 2 + 2?",
+          options: ["2", "3", "4", "5"],
+          answer: "4"
+        });
+        console.log("Question added with ID:", docRef.id);
+      } catch (err) {
+        console.error("Error adding question:", err);
+      }
+    }
+    // addQuestion();
+    */
+  </script>
+</body>
+</html>
